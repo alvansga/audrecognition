@@ -1,7 +1,13 @@
-import random
-import time
+# BIGPROJECT5
+# which one
+# by ejra
+# start date 3 agustus 2021
+# finish date -------------
 
+import pygame,sys,random, time
 import speech_recognition as sr
+
+from pygame.locals import *
 
 
 def recognize_speech_from_mic(recognizer, microphone):
