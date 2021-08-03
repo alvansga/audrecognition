@@ -122,6 +122,11 @@ def recognize_speech_from_mic(recognizer, microphone):
     return response
 
 def hearing_words():
+    '''
+    TODO:
+    have to return numbers from 1 to n glasses
+    '''
+
     # set the list of words, maxnumber of guesses, and prompt limit
     WORDS = ["spider", "wolf", "tiger", "shark", "eagle", "snake"]
     NUM_GUESSES = 1
@@ -196,6 +201,15 @@ def main():
     DISPLAYSURF = pygame.display.set_mode((LEBARWINDOW,TINGGIWINDOW))
     DISPLAYSURF.fill(BGCOLOR1)
     pygame.display.set_caption('Pong')
+    '''
+    TODO:
+    make gelas.jpg
+    make ball.jpg
+    make anim function to randomized gelas.jpg
+    make anim function to show/hide ball.jpg
+    show number until randomize animation
+    '''
+
     # player = pygame.image.load("media/marble.png")
     # DISPLAYSURF.blit(player,(0,0))
     # bola = Ball(DISPLAYSURF,int(LEBARWINDOW/2),int(TINGGIWINDOW/2))
