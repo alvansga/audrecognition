@@ -11,23 +11,37 @@ from pygame.locals import *
 
 # ===================================================
 FPS = 60
-LEBARWINDOW = 320
-TINGGIWINDOW = 480
+WINDOW_W = 320
+WINDOW_H = 480
 
-UKURANMARBLE = 36
-JARI2MARBLE = int (UKURANMARBLE* 0.5)
-UKURANCELAH = 10
+COL_PANEL = 2
+ROW_PANEL = 2
 
-LEBARPAPAN = 7
-TINGGIPAPAN = 7
+ROW_H = 200
+COL_W = 160
 
 #############
 MAXLEVEL = 7
 #############
 
 #ukuran margin
-XMARGIN = int((LEBARWINDOW - (LEBARPAPAN * (UKURANMARBLE + UKURANCELAH))) / 2)
-YMARGIN = int((TINGGIWINDOW - (TINGGIPAPAN * (UKURANMARBLE + UKURANCELAH))) / 2)
+# XMARGIN = int((WINDOW_W - (COL_PANEL * (UKURANMARBLE + UKURANCELAH))) / 2)
+# YMARGIN = int((WINDOW_H - (ROW_PANEL * (UKURANMARBLE + UKURANCELAH))) / 2)
+XMARGIN = 40
+YMARGIN = 40
+
+HEADER_X = 0
+HEADER_Y = 0
+HEADER_W = WINDOW_W
+HEADER_H = 80
+
+FOOTER_X = 0
+FOOTER_Y = WINDOW_H-40
+FOOTER_W = WINDOW_W
+FOOTER_H = 40
+
+
+TABLE = [80,80+160]
 
 # warna yang dibutuhkan
 #               R   G   B
@@ -193,12 +207,80 @@ def hearing_words():
             print("Sorry, you lose!\nI was thinking of '{}'.".format(word))
             break
 
+# WINDOW_W = 320
+# WINDOW_H = 480
+
+# UKURANMARBLE = 50
+# JARI2MARBLE = int (UKURANMARBLE* 0.5)
+# UKURANCELAH = 10
+
+# COL_PANEL = 2
+# ROW_PANEL = 2
+
+# #############
+# MAXLEVEL = 7
+# #############
+
+# #ukuran margin
+# XMARGIN = int((WINDOW_W - (COL_PANEL * (UKURANMARBLE + UKURANCELAH))) / 2)
+# YMARGIN = int((WINDOW_H - (ROW_PANEL * (UKURANMARBLE + UKURANCELAH))) / 2)
+
+def panel2xy(baris,kolom):
+    left = baris * COL_W + XMARGIN
+    top = kolom * ROW_H + YMARGIN + HEADER_H
+    return (left,top)
+
+
+def drawBall((x,y)):
+    global DISPLAYSURF
+    marble = pygame.image.load("resource/marbles.png")
+    adjust_x = 25
+    adjust_y = 55
+    DISPLAYSURF.blit(marble,(x + adjust_x,y + adjust_y))
+
+def drawGlass((x,y)):
+    global DISPLAYSURF
+    gelas = pygame.image.load("resource/gelas.png")
+    adjust_x = 15
+    adjust_y = 20
+    DISPLAYSURF.blit(gelas,(x + adjust_x,y + adjust_y))
+
+# teks = "1"
+# size = 24
+# color = (0,0,0) --> hitam
+def drawNum(teks,size,color,(x,y)):
+    global DISPLAYSURF
+    font = pygame.font.Font('freesansbold.ttf',size)
+    text = font.render(teks,True,color)
+    textRect = text.get_rect()
+    adjust_x = 40
+    adjust_y = 65
+    textRect.center = (x+adjust_x,y+adjust_y)
+    DISPLAYSURF.blit(text,textRect)
+
+def drawTitle(teks,size,color,(x,y)):
+    global DISPLAYSURF
+    font = pygame.font.Font('freesansbold.ttf',size)
+    text = font.render(teks,True,color)
+    textRect = text.get_rect()
+    adjust_x = 0
+    adjust_y = 0
+    textRect.center = (x+adjust_x,y+adjust_y)
+    DISPLAYSURF.blit(text,textRect)
+
+
+def drawPanel():
+    # header
+    global DISPLAYSURF
+    pygame.draw.rect(DISPLAYSURF,(255,255,255),(HEADER_X,HEADER_Y,HEADER_W,HEADER_H))
+    pygame.draw.rect(DISPLAYSURF,(255,255,255),(FOOTER_X,FOOTER_Y,FOOTER_W,FOOTER_H))
+    # DISPLAYSURF.blit(x,textRect)
 
 def main():
     global FPSCLOCK, DISPLAYSURF
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    DISPLAYSURF = pygame.display.set_mode((LEBARWINDOW,TINGGIWINDOW))
+    DISPLAYSURF = pygame.display.set_mode((WINDOW_W,WINDOW_H))
     DISPLAYSURF.fill(BGCOLOR1)
     pygame.display.set_caption('Pong')
     '''
@@ -207,39 +289,27 @@ def main():
     make anim function to show/hide ball.jpg
     show number until randomize animation
     '''
-    marble = pygame.image.load("resource/marbles.png")
-    DISPLAYSURF.blit(marble,(100,100))
-    gelas = pygame.image.load("resource/gelas.png")
-    DISPLAYSURF.blit(gelas,(100,100))
-    DISPLAYSURF.blit(gelas,(100,300))
-    DISPLAYSURF.blit(gelas,(200,100))
-    # gelas2 = pygame.image.load("resource/gelas.png")
-    DISPLAYSURF.blit(gelas,(200,300))
+    # drawPanel() # sementar, hanya utk liat pembagian panel
 
-    font = pygame.font.Font('freesansbold.ttf',24)
-    text = font.render('1',True,(0,0,0))
-    textRect = text.get_rect()
-    textRect.center = (150,150)
-    DISPLAYSURF.blit(text,textRect)
+    drawBall(panel2xy(0,0))
+    drawGlass(panel2xy(0,0))
+    drawGlass(panel2xy(0,1))
+    drawGlass(panel2xy(1,0))
+    drawGlass(panel2xy(1,1))
+    drawNum("1",24,(0,0,0),panel2xy(0,0))
+    drawNum("2",24,(0,0,0),panel2xy(0,1))
+    drawNum("3",24,(0,0,0),panel2xy(1,0))
+    drawNum("4",24,(0,0,0),panel2xy(1,1))
+    drawTitle("Which One?",24,(0,0,0),(int(HEADER_W/2),int(HEADER_H/2)))
+    
 
-    text = font.render('2',True,(0,0,0))
-    textRect = text.get_rect()
-    textRect.center = (250,150)
-    DISPLAYSURF.blit(text,textRect)
 
-    text = font.render('3',True,(0,0,0))
-    textRect = text.get_rect()
-    textRect.center = (150,350)
-    DISPLAYSURF.blit(text,textRect)
-
-    text = font.render('4',True,(0,0,0))
-    textRect = text.get_rect()
-    textRect.center = (250,350)
-    DISPLAYSURF.blit(text,textRect)
+    pygame.display.update() #dont update here, move me later
+    print(hearing_words())
 
     # player = pygame.image.load("media/marble.png")
     # DISPLAYSURF.blit(player,(0,0))
-    # bola = Ball(DISPLAYSURF,int(LEBARWINDOW/2),int(TINGGIWINDOW/2))
+
     xmouse = 0
     ymouse = 0
     prevselect = (None,None)
@@ -270,11 +340,18 @@ def main():
                 mouseklik = True
                 print("mouse tekan")
                 # if(hearing_words() != ""):
-                print(hearing_words())
 
             elif event.type == MOUSEMOTION:
                 xmouse, ymouse = event.pos
 
+            elif (event.type == KEYUP and event.key == K_d):
+                print("panah kanan")
+            elif (event.type == KEYUP and event.key == K_w):
+                print("panah atas")
+            elif (event.type == KEYUP and event.key == K_a):
+                print("panah kiri")
+            elif (event.type == KEYUP and event.key == K_s):
+                print("panah bawah")
         
         pygame.display.update()
         FPSCLOCK.tick(FPS)
