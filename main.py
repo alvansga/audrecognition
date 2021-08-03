@@ -293,19 +293,34 @@ def main():
 
     drawBall(panel2xy(0,0))
     drawGlass(panel2xy(0,0))
-    drawGlass(panel2xy(0,1))
     drawGlass(panel2xy(1,0))
+    drawGlass(panel2xy(0,1))
     drawGlass(panel2xy(1,1))
     drawNum("1",24,(0,0,0),panel2xy(0,0))
-    drawNum("2",24,(0,0,0),panel2xy(0,1))
-    drawNum("3",24,(0,0,0),panel2xy(1,0))
+    drawNum("2",24,(0,0,0),panel2xy(1,0))
+    drawNum("3",24,(0,0,0),panel2xy(0,1))
     drawNum("4",24,(0,0,0),panel2xy(1,1))
     drawTitle("Which One?",24,(0,0,0),(int(HEADER_W/2),int(HEADER_H/2)))
     
 
 
     pygame.display.update() #dont update here, move me later
-    print(hearing_words())
+    # print(hearing_words())
+    result = hearing_words()
+    print(result)
+    if(result == '2' or result == "two" or result == "to" or result == "who" or result == "poo"):
+        DISPLAYSURF.fill(BGCOLOR1)
+        drawBall(panel2xy(1,0))
+        drawGlass(panel2xy(0,0))
+        # drawGlass(panel2xy(1,0))
+        drawGlass(panel2xy(0,1))
+        drawGlass(panel2xy(1,1))
+        drawNum("1",24,(0,0,0),panel2xy(0,0))
+        # drawNum("2",24,(0,0,0),panel2xy(1,0))
+        drawNum("3",24,(0,0,0),panel2xy(0,1))
+        drawNum("4",24,(0,0,0),panel2xy(1,1))
+        drawTitle("Which One?",24,(0,0,0),(int(HEADER_W/2),int(HEADER_H/2)))
+        pygame.display.update() #dont update here, move me later
 
     # player = pygame.image.load("media/marble.png")
     # DISPLAYSURF.blit(player,(0,0))
