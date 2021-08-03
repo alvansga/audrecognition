@@ -9,6 +9,70 @@ import speech_recognition as sr
 
 from pygame.locals import *
 
+# ===================================================
+FPS = 60
+LEBARWINDOW = 320
+TINGGIWINDOW = 480
+
+UKURANMARBLE = 36
+JARI2MARBLE = int (UKURANMARBLE* 0.5)
+UKURANCELAH = 10
+
+LEBARPAPAN = 7
+TINGGIPAPAN = 7
+
+#############
+MAXLEVEL = 7
+#############
+
+#ukuran margin
+XMARGIN = int((LEBARWINDOW - (LEBARPAPAN * (UKURANMARBLE + UKURANCELAH))) / 2)
+YMARGIN = int((TINGGIWINDOW - (TINGGIPAPAN * (UKURANMARBLE + UKURANCELAH))) / 2)
+
+# warna yang dibutuhkan
+#               R   G   B
+PUTIH       = (255,255,255)
+JINGGA      = (255,180,  0)
+JINGGATUA   = (150, 75,  0)
+UNGU        = (200, 10,255)
+LIMEHIJAU   = (150,255,  0)
+BIRU        = (170,100,255)
+BIRUTUA     = (100,  0,150)
+MERAH       = (255,  0,  0)
+KUNING      = (255,255,  0)
+HITAM       = (  0,  0,  0)
+ABU2        = ( 10, 10, 10)
+ABU2_1      = ( 20, 20, 20)
+
+#dark theme
+# BGCOLOR1 = HITAM
+# BGCOLOR2 = ABU2
+
+# MARBLECOLOR = ABU2_1
+# MARBLECOLOR2 = HITAM
+# RINGCOLOR = ABU2
+# BOARDCOLOR = HITAM
+# BOARDCOLOR2 = ABU2
+# WINTEKSCOLOR = PUTIH
+
+#original
+BGCOLOR1 = BIRU
+BGCOLOR2 = LIMEHIJAU
+
+MARBLECOLOR = JINGGA
+MARBLECOLOR2 = JINGGATUA
+RINGCOLOR = PUTIH
+BOARDCOLOR = BIRU
+BOARDCOLOR2 = BIRUTUA
+WINTEKSCOLOR = PUTIH
+
+
+# gambar objek
+MARBLE = 'marble'
+CURMARBLE = 'curmarble'
+RING = 'ring'
+
+# ===================================================
 
 def recognize_speech_from_mic(recognizer, microphone):
     """Transcribe speech from recorded from `microphone`.
@@ -57,11 +121,10 @@ def recognize_speech_from_mic(recognizer, microphone):
 
     return response
 
-
-if __name__ == "__main__":
+def hearing_words():
     # set the list of words, maxnumber of guesses, and prompt limit
     WORDS = ["spider", "wolf", "tiger", "shark", "eagle", "snake"]
-    NUM_GUESSES = 3
+    NUM_GUESSES = 1
     PROMPT_LIMIT = 5
 
     # create recognizer and mic instances
@@ -79,8 +142,8 @@ if __name__ == "__main__":
     ).format(words=', '.join(WORDS), n=NUM_GUESSES)
 
     # show instructions and wait 3 seconds before starting the game
-    print(instructions)
-    time.sleep(3)
+    # print(instructions)
+    # time.sleep(3)
 
     for i in range(NUM_GUESSES):
         # get the guess from the user
@@ -106,7 +169,8 @@ if __name__ == "__main__":
             break
 
         # show the user the transcription
-        print("You said: {}".format(guess["transcription"]))
+        # print("You said: {}".format(guess["transcription"]))
+        return guess["transcription"].lower()
 
         # determine if guess is correct and if any attempts remain
         guess_is_correct = guess["transcription"].lower() == word.lower()
@@ -117,9 +181,62 @@ if __name__ == "__main__":
         # if no attempts left, the user loses the game
         if guess_is_correct:
             print("Correct! You win!".format(word))
-            break
+            # break
         elif user_has_more_attempts:
             print("Incorrect. Try again.\n")
         else:
             print("Sorry, you lose!\nI was thinking of '{}'.".format(word))
             break
+
+
+def main():
+    global FPSCLOCK, DISPLAYSURF
+    pygame.init()
+    FPSCLOCK = pygame.time.Clock()
+    DISPLAYSURF = pygame.display.set_mode((LEBARWINDOW,TINGGIWINDOW))
+    DISPLAYSURF.fill(BGCOLOR1)
+    pygame.display.set_caption('Pong')
+    # player = pygame.image.load("media/marble.png")
+    # DISPLAYSURF.blit(player,(0,0))
+    # bola = Ball(DISPLAYSURF,int(LEBARWINDOW/2),int(TINGGIWINDOW/2))
+    xmouse = 0
+    ymouse = 0
+    prevselect = (None,None)
+    mousehold = False
+    win = False
+
+    while True:
+        mouseklik = False
+        mouserelease = False
+
+        for event in pygame.event.get():
+            if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
+                pygame.quit()
+                sys.exit()
+            
+            elif event.type == MOUSEMOTION and mousehold == True:
+                print ("mouse hold")
+                xmouse, ymouse = event.pos
+            
+            elif event.type == MOUSEBUTTONUP:
+                print ("mouse lepas")
+                xmouse, ymouse = event.pos
+                mousehold = False
+                mouserelease = True
+
+            elif event.type == MOUSEBUTTONDOWN:
+                xmouse, ymouse = event.pos
+                mouseklik = True
+                print("mouse tekan")
+                # if(hearing_words() != ""):
+                print(hearing_words())
+
+            elif event.type == MOUSEMOTION:
+                xmouse, ymouse = event.pos
+
+        
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+
+if __name__ == '__main__':
+    main()
