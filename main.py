@@ -203,12 +203,39 @@ def main():
     pygame.display.set_caption('Pong')
     '''
     TODO:
-    make gelas.jpg
-    make ball.jpg
     make anim function to randomized gelas.jpg
     make anim function to show/hide ball.jpg
     show number until randomize animation
     '''
+    marble = pygame.image.load("resource/marbles.png")
+    DISPLAYSURF.blit(marble,(100,100))
+    gelas = pygame.image.load("resource/gelas.png")
+    DISPLAYSURF.blit(gelas,(100,100))
+    DISPLAYSURF.blit(gelas,(100,300))
+    DISPLAYSURF.blit(gelas,(200,100))
+    # gelas2 = pygame.image.load("resource/gelas.png")
+    DISPLAYSURF.blit(gelas,(200,300))
+
+    font = pygame.font.Font('freesansbold.ttf',24)
+    text = font.render('1',True,(0,0,0))
+    textRect = text.get_rect()
+    textRect.center = (150,150)
+    DISPLAYSURF.blit(text,textRect)
+
+    text = font.render('2',True,(0,0,0))
+    textRect = text.get_rect()
+    textRect.center = (250,150)
+    DISPLAYSURF.blit(text,textRect)
+
+    text = font.render('3',True,(0,0,0))
+    textRect = text.get_rect()
+    textRect.center = (150,350)
+    DISPLAYSURF.blit(text,textRect)
+
+    text = font.render('4',True,(0,0,0))
+    textRect = text.get_rect()
+    textRect.center = (250,350)
+    DISPLAYSURF.blit(text,textRect)
 
     # player = pygame.image.load("media/marble.png")
     # DISPLAYSURF.blit(player,(0,0))
