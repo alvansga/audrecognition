@@ -88,6 +88,13 @@ RING = 'ring'
 
 # ===================================================
 
+class Gelas():
+    def __init__(self,DISPLAYSURF):
+        self.displaysurf = DISPLAYSURF
+        self.pos = (0,0) #(left,top)
+
+
+
 def recognize_speech_from_mic(recognizer, microphone):
     """Transcribe speech from recorded from `microphone`.
 
@@ -207,39 +214,24 @@ def hearing_words():
             print("Sorry, you lose!\nI was thinking of '{}'.".format(word))
             break
 
-# WINDOW_W = 320
-# WINDOW_H = 480
-
-# UKURANMARBLE = 50
-# JARI2MARBLE = int (UKURANMARBLE* 0.5)
-# UKURANCELAH = 10
-
-# COL_PANEL = 2
-# ROW_PANEL = 2
-
-# #############
-# MAXLEVEL = 7
-# #############
-
-# #ukuran margin
-# XMARGIN = int((WINDOW_W - (COL_PANEL * (UKURANMARBLE + UKURANCELAH))) / 2)
-# YMARGIN = int((WINDOW_H - (ROW_PANEL * (UKURANMARBLE + UKURANCELAH))) / 2)
-
-def panel2xy(baris,kolom):
+def panel2xy(koor):
+    (baris,kolom) = koor
     left = baris * COL_W + XMARGIN
     top = kolom * ROW_H + YMARGIN + HEADER_H
     return (left,top)
 
 
-def drawBall((x,y)):
+def drawBall(koordinat):
     global DISPLAYSURF
+    (x,y) = koordinat
     marble = pygame.image.load("resource/marbles.png")
     adjust_x = 25
     adjust_y = 55
     DISPLAYSURF.blit(marble,(x + adjust_x,y + adjust_y))
 
-def drawGlass((x,y)):
+def drawGlass(koordinat):
     global DISPLAYSURF
+    (x,y) = koordinat
     gelas = pygame.image.load("resource/gelas.png")
     adjust_x = 15
     adjust_y = 20
@@ -248,8 +240,9 @@ def drawGlass((x,y)):
 # teks = "1"
 # size = 24
 # color = (0,0,0) --> hitam
-def drawNum(teks,size,color,(x,y)):
+def drawNum(teks,size,color,koordinat):
     global DISPLAYSURF
+    (x,y) = koordinat
     font = pygame.font.Font('freesansbold.ttf',size)
     text = font.render(teks,True,color)
     textRect = text.get_rect()
@@ -258,8 +251,9 @@ def drawNum(teks,size,color,(x,y)):
     textRect.center = (x+adjust_x,y+adjust_y)
     DISPLAYSURF.blit(text,textRect)
 
-def drawTitle(teks,size,color,(x,y)):
+def drawTitle(teks,size,color,koordinat):
     global DISPLAYSURF
+    (x,y) = koordinat
     font = pygame.font.Font('freesansbold.ttf',size)
     text = font.render(teks,True,color)
     textRect = text.get_rect()
@@ -276,13 +270,28 @@ def drawPanel():
     pygame.draw.rect(DISPLAYSURF,(255,255,255),(FOOTER_X,FOOTER_Y,FOOTER_W,FOOTER_H))
     # DISPLAYSURF.blit(x,textRect)
 
+def refreshBG(gelas_objlist,bAngka):
+    global DISPLAYSURF
+    DISPLAYSURF.fill(BGCOLOR1)
+    drawTitle("Which One?",24,(0,0,0),(int(HEADER_W/2),int(HEADER_H/2)))
+
+    for i in range(len(gelas_objlist)):
+        (x,y) = gelas_objlist[i].pos
+        drawGlass(panel2xy((x,y)))
+
+    if bAngka:
+        drawNum("1",24,(0,0,0),panel2xy(0,0))
+        drawNum("2",24,(0,0,0),panel2xy(1,0))
+        drawNum("3",24,(0,0,0),panel2xy(0,1))
+        drawNum("4",24,(0,0,0),panel2xy(1,1))
+
 def main():
     global FPSCLOCK, DISPLAYSURF
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOW_W,WINDOW_H))
     DISPLAYSURF.fill(BGCOLOR1)
-    pygame.display.set_caption('Pong')
+    pygame.display.set_caption('WHICH ONE')
     '''
     TODO:
     make anim function to randomized gelas.jpg
@@ -290,16 +299,26 @@ def main():
     show number until randomize animation
     '''
     # drawPanel() # sementar, hanya utk liat pembagian panel
+    gelas_default=[(0,0),(1,0),(0,1),(1,1)]
+    gelas_objlist = []
+    gelas_objlist.append(Gelas(DISPLAYSURF))
+    gelas_objlist[0].pos = panel2xy(gelas_default[0])
+    gelas_objlist.append(Gelas(DISPLAYSURF))
+    gelas_objlist[1].pos = panel2xy(gelas_default[1])
+    gelas_objlist.append(Gelas(DISPLAYSURF))
+    gelas_objlist[2].pos = panel2xy(gelas_default[2])
+    gelas_objlist.append(Gelas(DISPLAYSURF))
+    gelas_objlist[3].pos = panel2xy(gelas_default[3])
 
-    drawBall(panel2xy(0,0))
-    drawGlass(panel2xy(0,0))
-    drawGlass(panel2xy(1,0))
-    drawGlass(panel2xy(0,1))
-    drawGlass(panel2xy(1,1))
-    drawNum("1",24,(0,0,0),panel2xy(0,0))
-    drawNum("2",24,(0,0,0),panel2xy(1,0))
-    drawNum("3",24,(0,0,0),panel2xy(0,1))
-    drawNum("4",24,(0,0,0),panel2xy(1,1))
+    drawBall(panel2xy((0,0)))
+    drawGlass(gelas_objlist[0].pos)
+    drawGlass(gelas_objlist[1].pos)
+    drawGlass(gelas_objlist[2].pos)
+    drawGlass(gelas_objlist[3].pos)
+    drawNum("1",24,(0,0,0),panel2xy((0,0)))
+    drawNum("2",24,(0,0,0),panel2xy((1,0)))
+    drawNum("3",24,(0,0,0),panel2xy((0,1)))
+    drawNum("4",24,(0,0,0),panel2xy((1,1)))
     drawTitle("Which One?",24,(0,0,0),(int(HEADER_W/2),int(HEADER_H/2)))
     
 
@@ -332,6 +351,7 @@ def main():
     win = False
 
     while True:
+        # refreshBG(gelas_objlist,False)
         mouseklik = False
         mouserelease = False
 
