@@ -124,7 +124,7 @@ def recognize_speech_from_mic(recognizer, microphone):
     # if a RequestError or UnknownValueError exception is caught,
     #     update the response object accordingly
     try:
-        response["transcription"] = recognizer.recognize_google(audio)
+        response["transcription"] = recognizer.recognize_google(audio_data=audio,language="id")
     except sr.RequestError:
         # API was unreachable or unresponsive
         response["success"] = False
