@@ -225,7 +225,7 @@ def drawBall(koordinat):
     global DISPLAYSURF
     (x,y) = koordinat
     marble = pygame.image.load("resource/marbles.png")
-    adjust_x = 25
+    adjust_x = 23
     adjust_y = 55
     DISPLAYSURF.blit(marble,(x + adjust_x,y + adjust_y))
 
@@ -237,6 +237,14 @@ def drawGlass(koordinat):
     adjust_y = 20
     DISPLAYSURF.blit(gelas,(x + adjust_x,y + adjust_y))
 
+def drawShadow(koordinat):
+    global DISPLAYSURF
+    (x,y) = koordinat
+    gelas = pygame.image.load("resource/shadow.png")
+    adjust_x = 15
+    adjust_y = 20
+    DISPLAYSURF.blit(gelas,(x + adjust_x,y + adjust_y))
+    
 # teks = "1"
 # size = 24
 # color = (0,0,0) --> hitam
@@ -270,20 +278,26 @@ def drawPanel():
     pygame.draw.rect(DISPLAYSURF,(255,255,255),(FOOTER_X,FOOTER_Y,FOOTER_W,FOOTER_H))
     # DISPLAYSURF.blit(x,textRect)
 
-def refreshBG(gelas_objlist,bAngka):
+def refreshBG(gelas_objlist,bAngka,bBall):
     global DISPLAYSURF
     DISPLAYSURF.fill(BGCOLOR1)
+
+    if bBall:
+        drawShadow(panel2xy((1,0)))
+        drawBall(panel2xy((1,0)))
+
     drawTitle("Which One?",24,(0,0,0),(int(HEADER_W/2),int(HEADER_H/2)))
 
     for i in range(len(gelas_objlist)):
-        (x,y) = gelas_objlist[i].pos
-        drawGlass(panel2xy((x,y)))
+        # (x,y) = gelas_objlist[i].pos
+        drawGlass(gelas_objlist[i].pos)
 
     if bAngka:
-        drawNum("1",24,(0,0,0),panel2xy(0,0))
-        drawNum("2",24,(0,0,0),panel2xy(1,0))
-        drawNum("3",24,(0,0,0),panel2xy(0,1))
-        drawNum("4",24,(0,0,0),panel2xy(1,1))
+        drawNum("1",24,(0,0,0),panel2xy((0,0)))
+        drawNum("2",24,(0,0,0),panel2xy((1,0)))
+        drawNum("3",24,(0,0,0),panel2xy((0,1)))
+        drawNum("4",24,(0,0,0),panel2xy((1,1)))
+    
 
 def main():
     global FPSCLOCK, DISPLAYSURF
@@ -351,7 +365,7 @@ def main():
     win = False
 
     while True:
-        # refreshBG(gelas_objlist,False)
+        refreshBG(gelas_objlist,False,True)
         mouseklik = False
         mouserelease = False
 
@@ -381,12 +395,27 @@ def main():
 
             elif (event.type == KEYUP and event.key == K_d):
                 print("panah kanan")
+                (x,y) = gelas_objlist[1].pos
+                x = x + 3
+                gelas_objlist[1].pos = (x,y)
+
             elif (event.type == KEYUP and event.key == K_w):
                 print("panah atas")
+                (x,y) = gelas_objlist[1].pos
+                y = y - 3
+                gelas_objlist[1].pos = (x,y)
+
             elif (event.type == KEYUP and event.key == K_a):
                 print("panah kiri")
+                (x,y) = gelas_objlist[1].pos
+                x = x - 3
+                gelas_objlist[1].pos = (x,y)
+
             elif (event.type == KEYUP and event.key == K_s):
                 print("panah bawah")
+                (x,y) = gelas_objlist[1].pos
+                y = y + 3
+                gelas_objlist[1].pos = (x,y)
         
         pygame.display.update()
         FPSCLOCK.tick(FPS)
