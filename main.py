@@ -86,12 +86,16 @@ MARBLE = 'marble'
 CURMARBLE = 'curmarble'
 RING = 'ring'
 
+
+GELAS_DEFAULT=[(0,0),(1,0),(0,1),(1,1)]
+
 # ===================================================
 
 class Gelas():
     def __init__(self,DISPLAYSURF):
         self.displaysurf = DISPLAYSURF
         self.pos = (0,0) #(left,top)
+        self.state = 0 #0-> none, 1-> angkat, 2-> turun
 
 
 
@@ -244,7 +248,7 @@ def drawShadow(koordinat):
     adjust_x = 15
     adjust_y = 20
     DISPLAYSURF.blit(gelas,(x + adjust_x,y + adjust_y))
-    
+
 # teks = "1"
 # size = 24
 # color = (0,0,0) --> hitam
@@ -281,9 +285,12 @@ def drawPanel():
 def refreshBG(gelas_objlist,bAngka,bBall):
     global DISPLAYSURF
     DISPLAYSURF.fill(BGCOLOR1)
+    for i in range(len(gelas_objlist)):
+        # (x,y) = gelas_objlist[i].pos
+        drawShadow(panel2xy(GELAS_DEFAULT[i]))
 
     if bBall:
-        drawShadow(panel2xy((1,0)))
+        # drawShadow(panel2xy((1,0)))
         drawBall(panel2xy((1,0)))
 
     drawTitle("Which One?",24,(0,0,0),(int(HEADER_W/2),int(HEADER_H/2)))
@@ -298,6 +305,37 @@ def refreshBG(gelas_objlist,bAngka,bBall):
         drawNum("3",24,(0,0,0),panel2xy((0,1)))
         drawNum("4",24,(0,0,0),panel2xy((1,1)))
     
+def revealBall(gelas_objlist,idx,on_off):
+    if (not on_off):
+        return 0
+    # state = 0 #0-> none, 1-> angkat, 2-> turun
+    # cek bola ada di gelas mana
+    (x,y) = gelas_objlist[idx].pos
+
+    (x2,y2) = panel2xy(GELAS_DEFAULT[idx])
+
+
+    if y == y2:
+        if gelas_objlist[idx].state == 0:
+            gelas_objlist[idx].state = 1
+
+        elif gelas_objlist[idx].state == 2:
+            gelas_objlist[idx].state = 0
+            return 0
+
+    if y <= (y2 - 60): # batas terangkat
+        time.sleep(2)
+        gelas_objlist[idx].state = 2
+
+    if gelas_objlist[idx].state == 1:
+        y = y - 3 #angkat
+    elif gelas_objlist[idx].state == 2:
+        y = y + 3 #turun
+        
+
+    gelas_objlist[idx].pos = (x,y)
+    print(idx,x,y)
+    return 1
 
 def main():
     global FPSCLOCK, DISPLAYSURF
@@ -313,16 +351,15 @@ def main():
     show number until randomize animation
     '''
     # drawPanel() # sementar, hanya utk liat pembagian panel
-    gelas_default=[(0,0),(1,0),(0,1),(1,1)]
     gelas_objlist = []
     gelas_objlist.append(Gelas(DISPLAYSURF))
-    gelas_objlist[0].pos = panel2xy(gelas_default[0])
+    gelas_objlist[0].pos = panel2xy(GELAS_DEFAULT[0])
     gelas_objlist.append(Gelas(DISPLAYSURF))
-    gelas_objlist[1].pos = panel2xy(gelas_default[1])
+    gelas_objlist[1].pos = panel2xy(GELAS_DEFAULT[1])
     gelas_objlist.append(Gelas(DISPLAYSURF))
-    gelas_objlist[2].pos = panel2xy(gelas_default[2])
+    gelas_objlist[2].pos = panel2xy(GELAS_DEFAULT[2])
     gelas_objlist.append(Gelas(DISPLAYSURF))
-    gelas_objlist[3].pos = panel2xy(gelas_default[3])
+    gelas_objlist[3].pos = panel2xy(GELAS_DEFAULT[3])
 
     drawBall(panel2xy((0,0)))
     drawGlass(gelas_objlist[0].pos)
@@ -364,6 +401,9 @@ def main():
     mousehold = False
     win = False
 
+    reveal = 0
+    idx = None
+
     while True:
         refreshBG(gelas_objlist,False,True)
         mouseklik = False
@@ -401,9 +441,11 @@ def main():
 
             elif (event.type == KEYUP and event.key == K_w):
                 print("panah atas")
-                (x,y) = gelas_objlist[1].pos
-                y = y - 3
-                gelas_objlist[1].pos = (x,y)
+                # (x,y) = gelas_objlist[1].pos
+                # y = y - 3
+                # gelas_objlist[1].pos = (x,y)
+                reveal = 1
+                idx = 3
 
             elif (event.type == KEYUP and event.key == K_a):
                 print("panah kiri")
@@ -417,6 +459,28 @@ def main():
                 y = y + 3
                 gelas_objlist[1].pos = (x,y)
         
+            elif (event.type == KEYUP and event.key == K_v):
+                print("\nmic on")
+                result = hearing_words()
+                print(result)
+                if result == "1" or result == "satu":
+                    idx = 0
+                elif result == "2" or result == "dua":
+                    idx = 1
+                elif result == "3" or result == "tiga":
+                    idx = 2
+                elif result == "4" or result == "empat":
+                    idx = 3
+                else:
+                    idx = None
+                    print("ucapkan angka 1 ~ 4")
+                print("idx->",idx)
+                if idx != None:
+                    reveal = 1
+
+        if idx != None:
+            reveal = revealBall(gelas_objlist,idx,reveal)
+
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
